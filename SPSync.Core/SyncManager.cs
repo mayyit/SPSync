@@ -700,7 +700,11 @@ namespace SPSync.Core
                             OnItemProgress((int)(((double)countFiles / (double)countAllFiles) * 100), ItemType.File, ProgressStatus.Warning, "File locked. Trying again later...", ex);
                         }
                     }
-                    else if (item.Status == ItemStatus.UpdatedRemote && syncToLocal)
+                    else if (
+                        (item.Status == ItemStatus.UpdatedRemote && syncToLocal)
+                        // one-way sync (RemoteToLocal), and file is missing: download it
+                        || (item.Status == ItemStatus.DeletedLocal && syncToLocal && !syncToRemote)
+                        )
                     {
                         OnItemProgress((int)(((double)countFiles / (double)countAllFiles) * 100), ItemType.File, ProgressStatus.Running, string.Format("Updating local file {0}...", item.Name));
 
